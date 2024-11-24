@@ -1,50 +1,96 @@
-conectado(inicio, 2).
-conectado(1, 7).
-conectado(2, 3).
-conectado(2, 8).
-conectado(3, 4).
-conectado(3, 9).
-conectado(4, 10).
-conectado(5, 6).
-conectado(5, 11).
-conectado(7, 13).
-conectado(8, 9).
-conectado(10, 16).
-conectado(11, 17).
-conectado(12, 18).
-conectado(13, 14).
-conectado(14, 15).
-conectado(14, 20).
-conectado(15, 21).
-conectado(16, 22).
-conectado(17, 23).
-conectado(18, 24).
-conectado(19, 25).
-conectado(20, 26).
-conectado(21, 22).
-conectado(23, 29).
-conectado(30, 36).
-conectado(25, 31).
-conectado(26, 27).
-conectado(27, 28).
-conectado(28, 34).
-conectado(30, 36).
-conectado(31, 32).
-conectado(32, fin).
-conectado(32, 33).
-conectado(33, 34).
-conectado(34, 35).
-conectado(35, 36).
+% caminos entre coordenadas (X1, Y1), (X2, Y2)
+inicio((2,1)).
+salida((2,6)).
 
+camino((1,1),(1,2)).
+camino((2,1),(3,1)).
+camino((2,1),(2,2)).
+camino((3,1),(4,1)).
+camino((3,1),(2,1)).
+camino((3,1),(3,2)).
+camino((4,1),(3,1)).
+camino((4,1),(4,2)).
+camino((5,1),(6,1)).
+camino((5,1),(5,2)).
+camino((6,1),(5,1)).
+camino((1,2),(1,1)).
+camino((1,2),(1,3)).
+camino((2,2),(1,2)).
+camino((2,2),(3,2)).
+camino((3,2),(3,1)).
+camino((3,2),(2,2)).
+camino((4,2),(4,1)).
+camino((4,2),(4,3)).
+camino((5,2),(5,1)).
+camino((5,2),(5,3)).
+camino((6,2),(6,3)).
+camino((1,3),(1,2)).
+camino((1,3),(2,3)).
+camino((2,3),(1,3)).
+camino((2,3),(3,3)).
+camino((2,3),(2,4)).
+camino((3,3),(2,3)).
+camino((3,3),(3,4)).
+camino((4,3),(4,2)).
+camino((4,3),(4,4)).
+camino((5,3),(5,2)).
+camino((5,3),(5,4)).
+camino((6,3),(6,2)).
+camino((6,3),(6,4)).
+camino((1,4),(1,5)).
+camino((2,4),(2,3)).
+camino((2,4),(2,5)).
+camino((3,4),(3,3)).
+camino((3,4),(4,4)).
+camino((4,4),(3,4)).
+camino((4,4),(4,3)).
+camino((5,4),(5,3)).
+camino((5,4),(5,5)).
+camino((6,4),(6,3)).
+camino((6,4),(6,5)).
+camino((1,5),(1,4)).
+camino((1,5),(1,6)).
+camino((2,5),(2,4)).
+camino((2,5),(3,5)).
+camino((3,5),(2,5)).
+camino((3,5),(4,5)).
+camino((4,5),(3,5)).
+camino((4,5),(5,5)).
+camino((4,5),(4,6)).
+camino((5,5),(5,4)).
+camino((5,5),(4,5)).
+camino((6,5),(6,4)).
+camino((6,5),(6,6)).
+camino((1,6),(1,5)).
+camino((1,6),(2,6)).
+camino((2,6),(1,6)).
+camino((2,6),(3,6)).
+camino((3,6),(2,6)).
+camino((3,6),(4,6)).
+camino((4,6),(4,5)).
+camino((4,6),(3,6)).
+camino((4,6),(5,6)).
+camino((5,6),(4,6)).
+camino((5,6),(6,6)).
+camino((6,6),(6,5)).
+camino((6,6),(5,6)).
 
-conectado(Pos1,Pos2) :- conecta(Pos1,Pos2).
-conectado(Pos1,Pos2) :- conecta(Pos2,Pos1).
+% Encuentra el camino desde el inicio hasta la salida
+resolver_camino(Camino) :-
+    inicio(Inicio), % Asigna a la variable Inicio el hecho declarado como inicio
+    salida(Salida), % Asigna a la variable Salida el hecho declarado com osalida
+    buscar_camino(Inicio, Salida, [Inicio], Camino), % LLama a buscar_camino pasando la pos.inicial, la pos.final, una lista que contiene las celdas visitadas (solo el incio al empezar)
+    writeln(Camino).
 
-miembro(X,[X|_]).
-miembro(X,[_|Y]) :- miembro(X,Y) .
+% Caso base: si la posición actual es la salida, el camino se ha encontrado y retorna el camino actual.
+buscar_camino(Salida, Salida, CaminoActual, CaminoActual).
 
-sol :- camino([inicio],Sol),write(Sol) .
-
-camino([fin|RestoDelCamino],[fin|RestoDelCamino]).
-camino([PosActual|RestoDelCamino],Sol) :- conectado(PosActual,PosSiguiente),\+ miembro(PosSiguiente,RestoDelCamino),
-					   camino([PosSiguiente,PosActual|RestoDelCamino],Sol).
+% Caso recursivo: moverse a una celda adyacente no visitada.
+buscar_camino(PosActual, Salida, Visitadas, Camino) :-
+    camino(PosActual, ProximaPos), % Busca las celdas a las que se puede mover basado en la base de conocimientos
+    % Si ProximaPos no esta en la lista Visitadas prolog continua explorando esta celda
+    % Si esta en la lista Visitadas, entonces se evita y no se sigue explorando en esa dirección
+    \+ member(ProximaPos, Visitadas), % Negación de member verifica si PorximaPos ya esta en la lista de visitadas
+    %Se llama a buscar_camino recursivamente:
+    % Desde ProximaPos añadiendola a Visitadas
+    buscar_camino(ProximaPos, Salida, [ProximaPos|Visitadas], Camino).
